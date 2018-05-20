@@ -1,0 +1,60 @@
+import requests
+from pymongo import MongoClient
+from bson import json_util
+import matplotlib.pyplot as plt
+
+#Getting user data
+rover_name = input("Choose a rover from: 1) curiosity 2) opportunity 3)spirit -> ")
+if rover_name == "curiosity":
+   cam_name = input("Enter a camera for curiosity rover: 1)FHAZ 2)RHAZ 3)MAST 4)CHEMCAM 5)MAHLI 6)MARDI 7)NAVCAM  -> ")
+elif rover_name == "opportunity":
+   cam_name = input("Enter a camera for curiosity rover: 1)FHAZ 2)RHAZ 3)NAVCAM 4)PAVCAM 5)MINITES -> ")
+else:
+   cam_name = input("Enter a camera for curiosity rover: 1)FHAZ 2)RHAZ 3)NAVCAM 4)PAVCAM 5)MINITES -> ")
+print("Enter a sol range")
+sol_start = int(input("Enter the start range: "))
+sol_end = int(input("Enter the end range: "))
+
+
+dict_count = [] # a list of no. of photos by a camera for a range of sol
+res = [] # a list of no. of photos by a camera for a range of sol(retrieved from the database)
+
+# making API call using requests
+for i in range(sol_start, sol_end):
+   url = "https://api.nasa.gov/mars-photos/api/v1/rovers/photos?api_key=DEMO_KEY"
+   temp = url.split('/photos')
+   concatenate = "/" + rover_name + "/photos" + "?sol=" + str(i) + "&api_key=DEMO_KEY"
+   temp[1] = concatenate
+   new_url = ''.join(temp)
+   response_page = requests.get(new_url)
+
+   data = json_util.loads(response_page.text) # JSON to python objects
+
+   connection = MongoClient('mongodb://localhost:27017/') #connecting to mongodb
+   db = connection.test_db
+   collection = db.collection
+
+   #inserting a list of objects under the "photos" key which are grouped by sol
+   count = 0
+   for dct in data['photos']:
+       collection.insert(dct)
+       if (dct['camera']['name']) == 'NAVCAM':
+           count += 1
+
+   dict_count.append(count) #to compare it with the database result for accuracy
+
+   #retrieving the no. of photos clicked by the given camera using count
+   result = db.collection.count({'photos': {'camera.name': cam_name}})
+
+   res.append(result)
+   db.collection.drop()# Emptying the collection after every sol
+
+
+#Plotting the graph
+x = range(sol_start, sol_end)
+y = res
+plt.plot(x, y)
+plt.xlabel('Sols')
+plt.ylabel('No. of photos')
+plt.title('No. of photos taken by %s camera of %s rover over a range of sols'%(cam_name,rover_name))
+plt.show()
