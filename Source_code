@@ -43,7 +43,7 @@ for i in range(sol_start, sol_end):
 
    dict_count.append(count) #to compare it with the database result for accuracy
 
-   #retrieving the no. of photos clicked by the given camera using count
+   #retrieving the number of photos clicked by the given camera using count
    result = db.collection.count({'camera.name': cam_name})
 
    res.append(result)
@@ -55,6 +55,6 @@ x = range(sol_start, sol_end)
 y = res
 plt.plot(x, y)
 plt.xlabel('Sols')
-plt.ylabel('No. of photos')
-plt.title('No. of photos taken by %s camera of %s rover over a range of sols'%(cam_name,rover_name))
+plt.ylabel('Number of photos')
+plt.title('Number of photos taken by %s camera of %s rover over a range of sols'%(cam_name,rover_name))
 plt.show()
