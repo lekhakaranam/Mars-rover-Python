@@ -43,7 +43,7 @@ for i in range(sol_start, sol_end):
 
    dict_count.append(count) #to compare it with the database result for accuracy
 
-   #retrieving the no. of photos clicked by the given camera using count
+   #retrieving the number of photos clicked by the given camera using count
    result = db.collection.count({'camera.name': cam_name})
 
    res.append(result)
