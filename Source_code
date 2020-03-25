@@ -55,6 +55,6 @@ x = range(sol_start, sol_end)
 y = res
 plt.plot(x, y)
 plt.xlabel('Sols')
-plt.ylabel('No. of photos')
-plt.title('No. of photos taken by %s camera of %s rover over a range of sols'%(cam_name,rover_name))
+plt.ylabel('Number of photos')
+plt.title('Number of photos taken by %s camera of %s rover over a range of sols'%(cam_name,rover_name))
 plt.show()
